@@ -234,7 +234,7 @@ class ExampleApp(QWidget):
             self.iteration = 500
         else:
             self.iteration = 100
-        # -------------------------- Чекбокс для случайной итерации ---------------- # test
+
         if self.check.isChecked():
             self.iteration = 1
         for i in range(self.iteration):
