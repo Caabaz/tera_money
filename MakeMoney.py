@@ -22,7 +22,7 @@ class ExampleApp(QWidget):
         self.combo2 = QComboBox()
         self.combo1.addItems(["Изумруды", "Бриллианты"])
         self.combo2.addItems(["Общая прибыль", "Прибыль с перспективой"])
-        self.lbl_auk = QLabel("Введите текущую стоимость на аукционе(в голде)")
+        self.lbl_auk = QLabel("Введите стоимость, по которой будете продавать")
         self.lbl_auk.setFont(QFont("Times", 14, QFont.Bold))
         self.lbl_auk.setStyleSheet("background-color:White;")
         self.lbl_stamina = QLabel("Введите число очков произовдства, которые хотите потратить:")
@@ -52,6 +52,8 @@ class ExampleApp(QWidget):
         self.logger.setReadOnly(True)
 
         self.check = QCheckBox('Одно случайное измерение')
+        self.check.setStyleSheet("background-color:White;")
+        self.check.setChecked(not True)
 
         layout1 = QVBoxLayout()
         layout2 = QHBoxLayout()
@@ -62,6 +64,7 @@ class ExampleApp(QWidget):
         layout7 = QHBoxLayout()
         layout8 = QHBoxLayout()
         layout9 = QHBoxLayout()
+        layout10 = QHBoxLayout()
 
         layout2.addWidget(self.lbl_r)
         layout2.addStretch(1)
@@ -84,13 +87,18 @@ class ExampleApp(QWidget):
         layout8.addWidget(self.combo2)
         layout8.addWidget(self.go_button)
 
+        layout10.addWidget(self.check)
+        layout10.addStretch(1)
+
+        layout1.addLayout(layout8)
+        layout1.addLayout(layout10)
         layout1.addLayout(layout9)
         layout1.addLayout(layout2)
         layout1.addLayout(layout3)
         layout1.addLayout(layout4)
         layout1.addLayout(layout5)
         layout1.addLayout(layout7)
-        layout1.addLayout(layout8)
+
         layout1.addStretch(1)
 
         layout6.addLayout(layout1)
@@ -103,12 +111,21 @@ class ExampleApp(QWidget):
     def events(self):
         self.go_button.clicked.connect(self.summary)
         self.combo1.activated[str].connect(self.onActivated)
+        self.combo2.activated[str].connect(self.onActivated2)
 
     def onActivated(self):
         if self.combo1.currentIndex() == 0:
             self.cost_b.setEnabled(False)
         if self.combo1.currentIndex() == 1:
             self.cost_b.setEnabled(True)
+
+
+    def onActivated2(self):
+        if self.combo2.currentIndex() == 1:
+            self.cost_b.setEnabled(False)
+            self.cost_s.setEnabled(False)
+            self.cost_r.setEnabled(False)
+
 
     def exit_prog(self):
         exit()
@@ -218,8 +235,8 @@ class ExampleApp(QWidget):
         else:
             self.iteration = 100
         # -------------------------- Чекбокс для случайной итерации ---------------- # test
-        #if self.check:
-         #   self.iteration = 1
+        if self.check.isChecked():
+            self.iteration = 1
         for i in range(self.iteration):
             if self.combo1.currentIndex() == 1:
                 self.statistic.append(self.make_brilliant(Craft()))
@@ -253,7 +270,7 @@ class ExampleApp(QWidget):
                         (sum_b * int(self.cost_b.text())) / self.iteration
                 self.logger.append(str(round(money, 1)))
             if self.combo2.currentIndex() == 1:
-                self.logger.append("Доход(более реальные условия):")
+                self.logger.append("Доход:")
                 money_alt = (sum_r * int(self.cost_b.text())) / (self.iteration * 10 * 5 * 2) + \
                             (sum_s * int(self.cost_b.text())) / (self.iteration * 10 * 5) + \
                             (sum_d * int(self.cost_b.text())) / (self.iteration * 10) + \
