@@ -2,7 +2,7 @@ import random
 import sys
 from PyQt5.Qt import Qt
 from PyQt5.QtWidgets import (QWidget, QHBoxLayout, QVBoxLayout, QLabel,
-                             QApplication, QCheckBox, QPushButton, QComboBox, QProgressBar, QLineEdit, QTextEdit)
+                             QApplication, QCheckBox, QPushButton, QComboBox, QErrorMessage, QLineEdit, QTextEdit)
 from PyQt5.QtGui import (QPalette, QImage, QBrush, QFont)
 
 
@@ -14,7 +14,6 @@ class ExampleApp(QWidget):
         self.statistic2 = []
         self.initUI()
         self.events()
-
 
     def initUI(self):
         self.go_button = QPushButton("Расчитать")
@@ -54,6 +53,8 @@ class ExampleApp(QWidget):
         self.check = QCheckBox('Одно случайное измерение')
         self.check.setStyleSheet("background-color:White;")
         self.check.setChecked(not True)
+
+        self.error_dialog = QErrorMessage()
 
         layout1 = QVBoxLayout()
         layout2 = QHBoxLayout()
@@ -106,6 +107,7 @@ class ExampleApp(QWidget):
 
         self.setLayout(layout6)
         self.setGeometry(100, 50, 1200, 500)
+        #self.setWindowTitle('MoneyCalc')
         self.show()
 
     def events(self):
@@ -126,14 +128,13 @@ class ExampleApp(QWidget):
             self.cost_s.setEnabled(False)
             self.cost_r.setEnabled(False)
 
-
     def exit_prog(self):
         exit()
 
     def resizeEvent(self, event):
         palette = QPalette()
         img = QImage('image.jpg')
-        scaled = img.scaled(self.size(), Qt.KeepAspectRatioByExpanding, transformMode=Qt.SmoothTransformation)
+        scaled = img.scaled(self.size(), Qt.KeepAspectRatioByExpanding)
         palette.setBrush(QPalette.Window, QBrush(scaled))
         self.setPalette(palette)
 
@@ -212,9 +213,21 @@ class ExampleApp(QWidget):
                 break
         return exp
 
+    def is_num(self, string):
+        try:
+            int(string)
+            return True
+        except ValueError:
+            self.error_dialog.showMessage('Некорректный ввод данных')
+            return False
+
     def summary(self):
         global money_alt, money
         self.logger.clear()
+        if not (self.is_num(self.cost_r.text()) and self.is_num(self.cost_s.text()) and
+                self.is_num(self.cost_b.text()) and self.is_num(self.cost_d.text()) and
+                self.is_num(self.have_s.text())):
+            return -1
         self.statistic = []
         self.statistic2 = []
         sum_r = 0
